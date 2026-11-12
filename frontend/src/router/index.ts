@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Overview from '@/views/Overview.vue'
+import { useSessionStore } from '@/stores/session'
 const Query = () => import('@/views/query/index.vue')
 const Chart = () => import('@/views/chart/index.vue')
 const Source = () => import('@/views/source/index.vue')
@@ -19,10 +20,12 @@ const Notify = () => import('@/views/notify/index.vue')
 const Cache = () => import('@/views/cache/index.vue')
 const Tag = () => import('@/views/tag/index.vue')
 const Share = () => import('@/views/share/index.vue')
+const Login = () => import('@/views/login/index.vue')
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    { path: '/login', name: 'login', component: Login, meta: { public: true } },
     { path: '/', name: 'overview', component: Overview },
     { path: '/query', name: 'query', component: Query },
     { path: '/chart', name: 'chart', component: Chart },
@@ -43,6 +46,17 @@ const router = createRouter({
     { path: '/tag', name: 'tag', component: Tag },
     { path: '/share', name: 'share', component: Share },
   ],
+})
+
+router.beforeEach((to) => {
+  const session = useSessionStore()
+  if (!to.meta.public && !session.isAuthenticated) {
+    return { name: 'login', query: to.fullPath !== '/' ? { redirect: to.fullPath } : {} }
+  }
+  if (to.name === 'login' && session.isAuthenticated) {
+    return { name: 'overview' }
+  }
+  return true
 })
 
 export default router

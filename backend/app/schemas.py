@@ -28,6 +28,47 @@ class EntryPayload(BaseModel):
     remark: str | None = None
 
 
+class LoginPayload(BaseModel):
+    """应用内身份验证：稳定身份标识 + 口令。"""
+
+    identity_id: str
+    password: str
+
+
+class GrantItem(BaseModel):
+    """单条授权条目：身份、允许/拒绝、可阅览的覆盖数据集范围。"""
+
+    identity_id: str
+    effect: str  # allow / deny
+    scope: list[str] = Field(default_factory=list)
+
+
+class CommitPayload(BaseModel):
+    """整份授权签认：携带基线版本做乐观并发控制，授权条目整份替换。"""
+
+    base_version: int
+    grants: list[GrantItem] = Field(default_factory=list)
+
+
+class CandidatePreviewPayload(BaseModel):
+    """候选范围预览：不落地，只按候选授权试算层级裁决结果。"""
+
+    grants: list[GrantItem] = Field(default_factory=list)
+
+
+class TagHandoverPayload(BaseModel):
+    """标签维护职责移交：基线版本 + 新维护者稳定身份。"""
+
+    base_version: int
+    new_maintainer_id: str
+
+
+class DatasetHandoverPayload(BaseModel):
+    """数据集维护职责移交。"""
+
+    new_maintainer_id: str
+
+
 
 class QueryEntry(BaseModel):
     """查询语句明细结构。"""

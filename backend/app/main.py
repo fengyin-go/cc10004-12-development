@@ -11,6 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import ROUTERS
 from app.store import store
+import app.bootstrap  # noqa: F401  # 注册演示身份库
+import app.access_store  # noqa: F401  # 初始化覆盖对象授权域
 
 app = FastAPI(title="数据洞察分析工作台", version="1.0.0")
 
